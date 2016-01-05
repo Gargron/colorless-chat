@@ -13,6 +13,7 @@ Deployable via Docker:
       -e REDIS_HOST="127.0.0.1" \
       -e REDIS_PORT=6379 \
       -e PORT=3000 \
-      --net=host
+      --net=host \
+      gargron/colorless-chat
 
 The above command will start a new docker container with the chat app that will always be restarted unless you manually stop the container, in the background, using the host's network interface (so the specified port will actually be taken up on the host system).
