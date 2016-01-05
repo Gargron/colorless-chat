@@ -1,6 +1,8 @@
 let React = require('react');
+let ReactDOM = require('react-dom');
 let Actions = require('../actions');
 let Dropdown = require('./dropdown');
+let usersStore = require('../stores/users');
 
 const ControlBar = React.createClass({
 
@@ -17,7 +19,7 @@ const ControlBar = React.createClass({
         text: this.state.text + '@' + name + ' ',
       });
 
-      React.findDOMNode(this.refs.input).focus();
+      ReactDOM.findDOMNode(this.refs.input).focus();
     }.bind(this));
   },
 
@@ -34,6 +36,34 @@ const ControlBar = React.createClass({
   handleInputHelp (e) {
     if (e.keyCode === 13) {
       return this.handleSubmit(e);
+    }
+  },
+
+  handleCompletions (e) {
+    if (e.keyCode === 9) {
+      e.preventDefault();
+
+      let node = ReactDOM.findDOMNode(this.refs.input);
+      let caretPosition = node.selectionStart;
+      let str = this.state.text;
+      let word;
+
+      let left = str.slice(0, caretPosition).search(/\S+$/);
+      let right = str.slice(caretPosition).search(/\s/);
+
+      if (right < 0) {
+        word = str.slice(left);
+      } else {
+        word = str.slice(left, right + caretPosition);
+      }
+
+      if (word.replace(/\s+/, '').length > 0) {
+        let match = usersStore.findBestCompletion(word);
+
+        this.setState({
+          text: [str.slice(0, caretPosition), match, str.slice(caretPosition)].join(''),
+        });
+      }
     }
   },
 
@@ -92,7 +122,7 @@ const ControlBar = React.createClass({
           <Dropdown label='Sound' options={[{ label: 'On', value: true}, { label: 'Off', value: false }]} onChange={this.handleSoundChange} />
 
           <div className='control-bar__form'>
-            <input ref='input' className='input-control' type='text' autoFocus autoComplete='off' value={this.state.text} onChange={this.handleTextChange} onKeyUp={this.handleInputHelp} />
+            <input ref='input' className='input-control' type='text' autoFocus autoComplete='off' value={this.state.text} onChange={this.handleTextChange} onKeyUp={this.handleInputHelp} onKeyDown={this.handleCompletions} />
             <button className='btn' onClick={this.handleSubmit}>Post!</button>
           </div>
         </div>
