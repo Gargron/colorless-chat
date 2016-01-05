@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="/assets/style.css" />
+  <title><%= brand %></title>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    window.BASE_URL = '<%= base_url %>';
+    window.BRAND = '<%= brand %>';
+  </script>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/assets/bundle.js"></script>
+</body>
+</html>
