@@ -33,6 +33,20 @@
     }
   });
 
+  socket.on('disconnect', function () {
+    Actions.disconnect();
+  });
+
+  socket.on('connect', function () {
+    Actions.connect();
+  });
+
+  window.addEventListener('offline', function () {
+    if (!navigator.onLine) {
+      Actions.offline();
+    }
+  });
+
   Actions.sendMessage.listen(function (t, hex) {
     socket.emit('message', { text: t, hex: hex });
   });

@@ -1,4 +1,5 @@
 FROM centos:centos6
+MAINTAINER Eugen Rochko <eugen@zeonfederated.com>
 
 ENV NODE_ENV production
 

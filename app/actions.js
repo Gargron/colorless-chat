@@ -11,6 +11,9 @@ const Actions = Reflux.createActions([
   'mentionOccured',
   'mention',
   'toggleSound',
+  'connect',
+  'disconnect',
+  'offline',
 ]);
 
 module.exports = Actions;
