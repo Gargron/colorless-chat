@@ -79,6 +79,8 @@ var messageEvent = function (user, d) {
   var hex  = d.hex;
   var ts   = Math.floor(new Date() / 1000);
 
+  // Commands that modify the contents of the message without side-effects
+  // and do not require privileges
   if (text.charAt(0) === '/') {
     if (text.indexOf('/me ') === 0) {
       type = 'action';
@@ -226,6 +228,7 @@ var checkBansAndMutes = function (db, socket, user, callback) {
 var isCommand = function (d) {
   var raw = d.text;
 
+  // Quick check to see if the message is a command with side-effects that requires privileges
   if (raw.charAt(0) === '/') {
     if (raw.indexOf('/mute ') === 0) {
       return true;
