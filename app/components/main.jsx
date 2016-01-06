@@ -63,6 +63,29 @@ const Main = React.createClass({
         alertMessage: 'Disconnected',
       });
     }.bind(this));
+
+    this.unsubscribe6 = Actions.warning.listen(function (d) {
+      let msg;
+
+      switch(d.type) {
+        case 'banned':
+          msg = 'You are banned and cannot post';
+          break;
+        case 'muted':
+          msg = 'You are currently muted';
+          break;
+        case 'bad-args':
+          msg = 'Your command was not processed due to invalid arguments';
+          break;
+        default:
+          msg = 'Unknown error prevented your message from being broadcast';
+      }
+
+      this.setState({
+        alertOpen: true,
+        alertMessage: msg,
+      });
+    }.bind(this));
   },
 
   componentWillUnmount () {
@@ -71,6 +94,7 @@ const Main = React.createClass({
     this.unsubscribe3();
     this.unsubscribe4();
     this.unsubscribe5();
+    this.unsubscribe6();
   },
 
   handleRequestClose () {

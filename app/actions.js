@@ -14,6 +14,7 @@ const Actions = Reflux.createActions([
   'connect',
   'disconnect',
   'offline',
+  'warning',
 ]);
 
 module.exports = Actions;

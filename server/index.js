@@ -79,7 +79,7 @@ var messageEvent = function (user, d) {
   var hex  = d.hex;
   var ts   = Math.floor(new Date() / 1000);
 
-  if (text.indexOf('/') === 0) {
+  if (text.charAt(0) === '/') {
     if (text.indexOf('/me ') === 0) {
       type = 'action';
       text = text.substring(4);
@@ -116,6 +116,12 @@ var authEvent = function (user) {
   return JSON.stringify({
     type: 'auth',
     user: user
+  });
+};
+
+var warningEvent = function (type) {
+  return JSON.stringify({
+    type: type
   });
 };
 
@@ -198,6 +204,68 @@ var reasonsToReject = function (user, d, limiter) {
   return false;
 };
 
+var checkBansAndMutes = function (db, socket, user, callback) {
+  db.mget(['chat:mute:' + user.name, 'ban:id:' + user.id], function (err, res) {
+    if (err) {
+      return;
+    }
+
+    var muted  = !!res[0];
+    var banned = !!res[1];
+
+    if (banned) {
+      socket.emit('warning', warningEvent('banned'));
+    } else if (muted) {
+      socket.emit('warning', warningEvent('muted'));
+    }
+
+    callback(muted || banned);
+  });
+};
+
+var isCommand = function (d) {
+  var raw = d.text;
+
+  if (raw.charAt(0) === '/') {
+    if (raw.indexOf('/mute ') === 0) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+var executeCommand = function (db, socket, user, channel, d) {
+  var raw = d.text;
+  var elements = raw.split(' ');
+
+  switch(elements[0]) {
+    case '/mute':
+      if (elements.length !== 3) {
+        socket.emit('warning', warningEvent('bad-args'));
+        break;
+      }
+
+      var target   = elements[1];
+      var duration = elements[2];
+
+      db.setex('chat:mute:' + target, parseInt(duration), true, function (err) {
+        if (err) {
+          return;
+        }
+
+        broadcast(db, socket, channel, messageEvent(user, {
+          text: '/me muted ' + target + ' for ' + duration + ' sec',
+          hex: d.hex
+        }), false);
+
+        db.quit();
+      });
+
+      break;
+  }
+};
+
 io.on('connection', function (socket) {
   var db            = redis.createClient({ host: REDIS_HOST, port: REDIS_PORT });
   var channel       = DEFAULT_CHANNEL;
@@ -272,8 +340,23 @@ io.on('connection', function (socket) {
       return;
     }
 
-    // fwd to redis
-    broadcast(db.duplicate(), socket, channel, messageEvent(user, d), localOnly);
+    var tmpDb = db.duplicate();
+
+    if (user.role > 1 && isCommand(d)) {
+      executeCommand(tmpDb, socket, user, channel, d);
+      return;
+    }
+
+    checkBansAndMutes(tmpDb, socket, user, function (err) {
+      if (err) {
+        tmpDb.quit();
+        return;
+      }
+
+      // fwd to redis
+      broadcast(tmpDb, socket, channel, messageEvent(user, d), localOnly);
+      tmpDb.quit();
+    });
   });
 
   socket.on('resubscribe', function (d) {

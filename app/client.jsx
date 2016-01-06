@@ -41,6 +41,10 @@
     Actions.connect();
   });
 
+  socket.on('warning', function (d) {
+    Actions.warning(JSON.parse(d));
+  });
+
   window.addEventListener('offline', function () {
     if (!navigator.onLine) {
       Actions.offline();
