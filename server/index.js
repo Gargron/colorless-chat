@@ -313,7 +313,7 @@ io.on('connection', function (socket) {
         id:    json.id,
         name:  json.name,
         hash:  crypto.createHash('md5').update(json.email).digest("hex"),
-        role:  json.role,
+        role:  parseInt(json.role),
         color: typeof json.meta !== 'undefined' ? (json.meta.color || DEFAULT_HEX) : DEFAULT_HEX
       };
 
