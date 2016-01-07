@@ -33,6 +33,9 @@ const User = React.createClass({
       case 4:
         role = 'Admin';
         break;
+      case 5:
+        role = 'Owner';
+        break;
     }
 
     return <ListItem
