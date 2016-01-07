@@ -1,65 +1,67 @@
-(function () {
-  let React    = require('react');
-  let ReactDOM = require('react-dom');
-  let Actions  = require('./actions');
-  let Main     = require('./components/main');
-  let usersStore = require('./stores/users');
+import injectTapEventPlugin from 'react-tap-event-plugin';
 
-  // Initialize listeners
-  usersStore.getInitialState();
+let React    = require('react');
+let ReactDOM = require('react-dom');
+let Actions  = require('./actions');
+let Main     = require('./components/main');
+let usersStore = require('./stores/users');
 
-  let socket = io();
+// Initialize listeners
+usersStore.getInitialState();
 
-  socket.on('message', function (d) {
-    console.log(d);
+let socket = io();
 
-    let raw = JSON.parse(d);
+socket.on('message', function (d) {
+  console.log(d);
 
-    switch(raw.type) {
-      case 'sync':
-        Actions.usersLoaded(raw);
-        break;
-      case 'auth':
-        Actions.authenticated(raw);
-        break;
-      case 'join':
-        Actions.userJoined(raw);
-        break;
-      case 'leave':
-        Actions.userLeft(raw);
-        break;
-      default:
-        Actions.messageReceived(raw);
-    }
-  });
+  let raw = JSON.parse(d);
 
-  socket.on('disconnect', function () {
-    Actions.disconnect();
-  });
+  switch(raw.type) {
+    case 'sync':
+      Actions.usersLoaded(raw);
+      break;
+    case 'auth':
+      Actions.authenticated(raw);
+      break;
+    case 'join':
+      Actions.userJoined(raw);
+      break;
+    case 'leave':
+      Actions.userLeft(raw);
+      break;
+    default:
+      Actions.messageReceived(raw);
+  }
+});
 
-  socket.on('connect', function () {
-    Actions.connect();
-  });
+socket.on('disconnect', function () {
+  Actions.disconnect();
+});
 
-  socket.on('warning', function (d) {
-    Actions.warning(JSON.parse(d));
-  });
+socket.on('connect', function () {
+  Actions.connect();
+});
 
-  window.addEventListener('offline', function () {
-    if (!navigator.onLine) {
-      Actions.offline();
-    }
-  });
+socket.on('warning', function (d) {
+  Actions.warning(JSON.parse(d));
+});
 
-  Actions.sendMessage.listen(function (t, hex) {
-    socket.emit('message', { text: t, hex: hex });
-  });
+window.addEventListener('offline', function () {
+  if (!navigator.onLine) {
+    Actions.offline();
+  }
+});
 
-  Actions.switchChannel.listen(function (channel) {
-    socket.emit('resubscribe', channel);
-  });
+Actions.sendMessage.listen(function (t, hex) {
+  socket.emit('message', { text: t, hex: hex });
+});
 
-  ReactDOM.render(<Main brand={window.BRAND} />, document.getElementById('app'));
+Actions.switchChannel.listen(function (channel) {
+  socket.emit('resubscribe', channel);
+});
 
-  window.React = React;
-})();
+injectTapEventPlugin();
+
+ReactDOM.render(<Main brand={window.BRAND} />, document.getElementById('app'));
+
+window.React = React;

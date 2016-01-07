@@ -1,7 +1,15 @@
+import ListItem from 'material-ui/lib/lists/list-item';
+import Avatar from 'material-ui/lib/avatar';
+
 let React = require('react');
 let Actions = require('../actions');
 
 const User = React.createClass({
+
+  handleClick (e) {
+    Actions.mention(this.props.data.get('name'));
+    this.props.onFinish();
+  },
 
   render () {
     let name = this.props.data.get('name');
@@ -27,13 +35,12 @@ const User = React.createClass({
         break;
     }
 
-    return (
-      <div className='user'>
-        <div className='user__avatar'><img src={gravatar} width='35' height='35' alt={name} onClick={Actions.mention.bind(null, name)} /></div>
-        <span className='user__name'>{name}</span>
-        <span className='user__role'>{role}</span>
-      </div>
-    );
+    return <ListItem
+      primaryText={name}
+      secondaryText={<span style={{ color: '#999' }}>{role}</span>}
+      secondaryTextLines={1}
+      leftAvatar={<Avatar src={gravatar} />}
+      onTouchTap={this.handleClick} />;
   },
 
 });

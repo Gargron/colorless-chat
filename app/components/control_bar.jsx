@@ -114,7 +114,7 @@ const ControlBar = React.createClass({
       <div className='control-bar'>
         <div className='container'>
           <div className='pull-right'>
-            <a href='#' target='_blank' className='brand'>{this.props.brand}</a>
+            <a href={window.BASE_URL} target='_blank' className='brand'>{this.props.brand}</a>
           </div>
 
           <Dropdown label='Channel' options={channels} onChange={this.handleChannelChange} />

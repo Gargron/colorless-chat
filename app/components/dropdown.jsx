@@ -1,6 +1,10 @@
+import ClickAwayable from 'material-ui/lib/mixins/click-awayable';
+
 let React = require('react');
 
 const Dropdown = React.createClass({
+
+  mixins: [ClickAwayable],
 
   getInitialState () {
     return {
@@ -26,6 +30,12 @@ const Dropdown = React.createClass({
     });
 
     this.props.onChange(option.value);
+  },
+
+  componentClickAway () {
+    this.setState({
+      open: false,
+    });
   },
 
   render () {

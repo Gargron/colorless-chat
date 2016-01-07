@@ -6,6 +6,8 @@
        url('/webfonts/svg/style_201193.svg#Tondu-Beta') format('svg');
 }
 
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext,cyrillic,latin-ext,greek,greek-ext,vietnamese);
+
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -76,9 +78,11 @@ body, #app {
   align-content: center;
   justify-content: center;
   flex-direction: column;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 18px;
-  font-family: "DejaVu Sans", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
+  font-family: "Roboto", sans-serif;
+  text-rendering: optimizelegibility;
+  font-feature-settings: "kern";
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -138,8 +142,13 @@ body, #app {
     text-align: left;
   }
 
+  .users-list__list {
+    min-height: 100%;
+  }
+
   .user {
     padding: 10px;
+    overflow: hidden;
 
     .user__avatar {
       border: 2px solid #333;
