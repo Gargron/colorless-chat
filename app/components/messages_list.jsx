@@ -9,8 +9,8 @@ const MessagesList = React.createClass({
 
   render () {
     let items = this.state.messages.reverse().map(function (item) {
-      return <Message key={item.get('id')} data={item} />;
-    });
+      return <Message key={item.get('id')} data={item} baseUrl={this.props.baseUrl} />;
+    }, this);
 
     return (
       <div className='messages-list'>

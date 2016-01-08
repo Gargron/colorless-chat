@@ -90,10 +90,12 @@ const ControlBar = React.createClass({
   },
 
   render () {
-    let channels = [
-      { label: '/main/', value: 'default' },
-      { label: '/ru/', value: 'russian' },
-    ];
+    let channels = this.props.channels.map(function (item) {
+      return {
+        label: item[0],
+        value: item[1],
+      };
+    });
 
     let colors = [
       { label: 'Custom', value: null },
@@ -114,7 +116,7 @@ const ControlBar = React.createClass({
       <div className='control-bar'>
         <div className='container'>
           <div className='pull-right'>
-            <a href={window.BASE_URL} target='_blank' className='brand'>{this.props.brand}</a>
+            <a href={this.props.baseUrl} target='_blank' className='brand'>{this.props.brand}</a>
           </div>
 
           <Dropdown label='Channel' options={channels} onChange={this.handleChannelChange} />

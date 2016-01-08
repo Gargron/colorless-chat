@@ -10,8 +10,12 @@
   <div id="app"></div>
 
   <script>
-    window.BASE_URL = '<%= base_url %>';
-    window.BRAND = '<%= brand %>';
+    window.env = {
+      VERSION: '<%= version %>',
+      BASE_URL: '<%= base_url %>',
+      BRAND: '<%= brand %>',
+      CHANNELS: '<%= channels %>'
+    };
   </script>
 
   <script src="/socket.io/socket.io.js"></script>

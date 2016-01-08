@@ -19,7 +19,7 @@ const Message = React.createClass({
               <img src={gravatar} width='50' height='50' alt={name} onClick={Actions.mention.bind(null, name)} />
             </div>
 
-            <a href={window.BASE_URL + '/users/' + name} target='_blank'>{name}</a>
+            <a href={this.props.baseUrl + '/users/' + name} target='_blank'>{name}</a>
           </div>
 
           <div className='message__triangle'><span style={{borderRightColor: hex }} /></div>

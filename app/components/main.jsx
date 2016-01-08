@@ -106,9 +106,9 @@ const Main = React.createClass({
   render () {
     return (
       <div className='main'>
-        <ControlBar brand={this.props.brand} />
-        <MessagesList />
-        <StatusBar />
+        <ControlBar brand={this.props.brand} baseUrl={this.props.baseUrl} channels={this.props.channels} />
+        <MessagesList baseUrl={this.props.baseUrl} />
+        <StatusBar baseUrl={this.props.baseUrl} />
         <Snackbar open={this.state.alertOpen} message={this.state.alertMessage} onRequestClose={this.handleRequestClose} />
       </div>
     );

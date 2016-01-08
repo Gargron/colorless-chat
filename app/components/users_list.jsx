@@ -35,7 +35,7 @@ const UsersList = React.createClass({
     let count = this.state.users.size;
 
     let items = this.state.users.map(function (item) {
-      return <User key={item.get('id')} data={item} onFinish={this.handleChange.bind(null, false)}/>;
+      return <User key={item.get('id')} data={item} onFinish={this.handleChange.bind(null, false)} baseUrl={this.props.baseUrl} />;
     }, this);
 
     return (

@@ -6,14 +6,17 @@ var redis   = require('redis');
 var cookie  = require('cookie');
 var crypto  = require('crypto');
 var color   = require("ansi-color").set;
-var httpProxy = require('http-proxy');
+var httpProxy   = require('http-proxy');
 var RateLimiter = require("rolling-rate-limiter");
+var pjson   = require('../package.json');
 
 const REDIS_HOST = process.env.REDIS_HOST || '127.0.0.1';
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
 const PORT = process.env.PORT || 3000;
 const BRAND = process.env.BRAND || 'Chat';
 const BASE_URL = process.env.BASE_URL || '';
+const CHANNELS = process.env.CHANNELS || '/main/:default;/ru/:russian';
+const VERSION = pjson.version;
 
 /**
  * Client-side events:
@@ -40,7 +43,7 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/../views');
 
 app.get('/', function (req, res) {
-  res.render('index', { brand: BRAND, base_url: BASE_URL });
+  res.render('index', { brand: BRAND, base_url: BASE_URL, channels: CHANNELS, version: VERSION });
 });
 
 if (process.env.NODE_ENV === 'development') {

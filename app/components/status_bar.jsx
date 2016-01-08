@@ -21,7 +21,7 @@ const StatusBar = React.createClass({
     return (
       <div className='status-bar'>
         {lastStatus}
-        <UsersList />
+        <UsersList baseUrl={this.props.baseUrl} />
       </div>
     );
   },
