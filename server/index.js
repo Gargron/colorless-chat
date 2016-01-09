@@ -66,12 +66,12 @@ if (CLEAN_SLATE) {
   
   var db = redis.createClient({ host: REDIS_HOST, port: REDIS_PORT });
   
-  db.del(['chat:online', 'chat:list:*', 'chat:sessions:*'], function (err) {
-    if (err) {
-      console.log(color('Error cleaning up redis:', 'red'), err);
-    }
-    
-    db.quit();
+  db.keys('chat:list:*', function (_, lists) {
+    db.keys('chat:sessions:*', function (_, sessions) {
+      db.del(['chat:online'] + lists + sessions, function (err) {
+        db.quit();
+      });
+    });
   });
 }
 
