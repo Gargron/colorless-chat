@@ -168,17 +168,17 @@ var join = function (db, socket, channel, user, localOnly) {
 var leave = function (db, socket, channel, user, localOnly) {
   db.unsubscribe();
 
-  db.srem(sessionKey(channel, user.id), socket.id);
-
-  db.scard(sessionKey(channel, user.id), function (err, num) {
-    if (err) {
-      return;
-    }
-
-    if (num === 0) {
-      db.hdel(listKey(channel), user.id);
-      db.publish(channel, leaveEvent(user), localOnly);
-    }
+  db.srem(sessionKey(channel, user.id), socket.id, function (_) {
+    db.scard(sessionKey(channel, user.id), function (err, num) {
+      if (err) {
+        return;
+      }
+  
+      if (num === 0) {
+        db.hdel(listKey(channel), user.id);
+        db.publish(channel, leaveEvent(user), localOnly);
+      }
+    });
   });
 };
 
