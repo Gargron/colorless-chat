@@ -63,8 +63,16 @@ if (process.env.NODE_ENV === 'development') {
 
 if (CLEAN_SLATE) {
   console.log(color('Cleaning up Redis for a fresh start', 'green'));
+  
   var db = redis.createClient({ host: REDIS_HOST, port: REDIS_PORT });
-  db.del(['chat:online', 'chat:list:*', 'chat:sessions:*']);
+  
+  db.del(['chat:online', 'chat:list:*', 'chat:sessions:*'], function (err) {
+    if (err) {
+      console.log(color('Error cleaning up redis:', 'red'), err);
+    }
+    
+    db.quit();
+  });
 }
 
 const DEFAULT_HEX     = '222223';
