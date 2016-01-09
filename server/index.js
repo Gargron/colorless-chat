@@ -68,7 +68,7 @@ if (CLEAN_SLATE) {
   
   db.keys('chat:list:*', function (_, lists) {
     db.keys('chat:sessions:*', function (_, sessions) {
-      db.del(['chat:online'] + lists + sessions, function (err) {
+      db.del(['chat:online'].concat(lists, sessions), function (err) {
         db.quit();
       });
     });
