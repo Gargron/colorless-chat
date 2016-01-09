@@ -7,6 +7,13 @@ const Statuses = Reflux.createStore({
   init () {
     this.listenTo(Actions.userJoined, this.onStatusChange);
     this.listenTo(Actions.userLeft, this.onStatusChange);
+    this.listenTo(Actions.switchChannel, this.onSwitchChannel);
+    this.listenTo(Actions.connect, this.onSwitchChannel);
+  },
+
+  onSwitchChannel () {
+    this.statuses = this.statuses.clear();
+    this.trigger(this.statuses);
   },
 
   onStatusChange (d) {

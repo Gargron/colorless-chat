@@ -46,8 +46,10 @@ const Dropdown = React.createClass({
 
     let selected;
 
-    if (this.state.selected === null && typeof this.props.preselected !== 'undefined') {
-      selected = this.props.preselected;
+    if (this.props.preselected) {
+      selected = this.props.options.find(function (opt) {
+        return opt.value === this.props.preselected;
+      }, this);
     } else if (this.state.selected === null) {
       selected = this.props.options[0];
     } else {

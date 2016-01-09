@@ -13,21 +13,29 @@ const ControlBar = React.createClass({
     return {
       text: '',
       color: null,
+      channel: 'default',
     };
   },
 
   componentDidMount () {
-    this.unsubscribe = Actions.mention.listen(function (name) {
+    this.unsubscribe1 = Actions.mention.listen(function (name) {
       this.setState({
         text: this.state.text + name + ' ',
       });
 
       ReactDOM.findDOMNode(this.refs.input).focus();
     }.bind(this));
+
+    this.unsubscribe2 = Actions.connect.listen(function () {
+      this.setState({
+        channel: 'default',
+      });
+    }.bind(this));
   },
 
   componentWillUnmount () {
-    this.unsubscribe();
+    this.unsubscribe1();
+    this.unsubscribe2();
   },
 
   handleTextChange (e) {
@@ -80,6 +88,10 @@ const ControlBar = React.createClass({
 
   handleChannelChange (channel) {
     Actions.switchChannel(channel);
+
+    this.setState({
+      channel: channel,
+    });
   },
 
   handleColorChange (color) {
@@ -122,8 +134,8 @@ const ControlBar = React.createClass({
             <a href={this.props.baseUrl} target='_blank' className='brand'>{this.props.brand}</a>
           </div>
 
-          <Dropdown label='Channel' options={channels} onChange={this.handleChannelChange} />
-          <Dropdown label='Color' options={colors} onChange={this.handleColorChange} />
+          <Dropdown label='Channel' options={channels} onChange={this.handleChannelChange} preselected={this.state.channel} />
+          <Dropdown label='Color' options={colors} onChange={this.handleColorChange} preselected={this.state.color} />
           <Dropdown label='Sound' options={[{ label: 'On', value: true}, { label: 'Off', value: false }]} onChange={this.handleSoundChange} />
 
           <div className='control-bar__form'>

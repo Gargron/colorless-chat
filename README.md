@@ -27,3 +27,4 @@ Options:
 * PORT: Which port the chat application will bind to
 * REDIS_PORT: Which Redis port to use
 * REDIS_HOST: Which Redis host to use
+* CLEAN_SLATE: Clean up all chat-related keys from Redis before starting

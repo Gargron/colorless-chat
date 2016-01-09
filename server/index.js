@@ -18,6 +18,7 @@ const BASE_URL = process.env.BASE_URL || '';
 const CHANNELS = process.env.CHANNELS || '/main/:default;/ru/:russian';
 const VERSION = pjson.version;
 const FAVICON_URL = process.env.FAVICON_URL || '/favicon.ico';
+const CLEAN_SLATE = (process.env.CLEAN_SLATE || false) === 'true';
 
 /**
  * Client-side events:
@@ -58,6 +59,12 @@ if (process.env.NODE_ENV === 'development') {
         target: 'http://localhost:8080'
     });
   });
+}
+
+if (CLEAN_SLATE) {
+  console.log(color('Cleaning up Redis for a fresh start', 'green'));
+  var db = redis.createClient({ host: REDIS_HOST, port: REDIS_PORT });
+  db.del(['chat:online', 'chat:list:*', 'chat:sessions:*']);
 }
 
 const DEFAULT_HEX     = '222223';
@@ -168,15 +175,22 @@ var join = function (db, socket, channel, user, localOnly) {
 var leave = function (db, socket, channel, user, localOnly) {
   db.unsubscribe();
 
-  db.srem(sessionKey(channel, user.id), socket.id, function (_) {
-    db.scard(sessionKey(channel, user.id), function (err, num) {
+  var tmpDb = db.duplicate();
+
+  tmpDb.srem(sessionKey(channel, user.id), socket.id, function (err) {
+    if (err) {
+      return;
+    }
+
+    tmpDb.scard(sessionKey(channel, user.id), function (err, num) {
       if (err) {
         return;
       }
-  
+
       if (num === 0) {
-        db.hdel(listKey(channel), user.id);
-        db.publish(channel, leaveEvent(user), localOnly);
+        tmpDb.hdel(listKey(channel), user.id);
+        tmpDb.publish(channel, leaveEvent(user));
+        tmpDb.quit();
       }
     });
   });
@@ -237,6 +251,10 @@ var isCommand = function (d) {
     if (raw.indexOf('/mute ') === 0) {
       return true;
     }
+
+    if (raw.indexOf('/unmute') === 0) {
+      return true;
+    }
   }
 
   return false;
@@ -270,8 +288,32 @@ var executeCommand = function (db, socket, user, channel, d) {
       });
 
       break;
+    case '/unmute':
+      if (elements.length !== 2) {
+        socket.emit('warning', warningEvent('bad-args'));
+        break;
+      }
+
+      var target = elements[1];
+
+      db.del('chat:mute:' + target, function (err) {
+        if (err) {
+          return;
+        }
+
+        broadcast(db, socket, channel, messageEvent(user, {
+          text: '/me unmuted ' + target,
+          hex: d.hex
+        }), false);
+
+        db.quit();
+      });
+
+      break;
   }
 };
+
+var connectedClients = 0;
 
 io.on('connection', function (socket) {
   var db            = redis.createClient({ host: REDIS_HOST, port: REDIS_PORT });
@@ -288,6 +330,7 @@ io.on('connection', function (socket) {
   });
 
   console.log('New socket connection', socket.id);
+  connectedClients += 1;
 
   db.on('error', function (err) {
     console.log(color('Redis error:', 'red'), err.code, 'for', socket.id);
@@ -367,9 +410,14 @@ io.on('connection', function (socket) {
   });
 
   socket.on('resubscribe', function (d) {
+    if (d === channel) {
+      return;
+    }
+
     if (!authenticated) {
       db.unsubscribe();
       channel = d;
+      sync(db, socket, channel);
       db.subscribe(channel);
 
       return;
@@ -381,6 +429,8 @@ io.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function () {
+    console.log(socket.id, 'disconnecting');
+
     if (authenticated) {
       leave(db, socket, channel, user, localOnly);
       db.zincrby('chat:online', -1, user.id);
@@ -388,12 +438,31 @@ io.on('connection', function (socket) {
 
     // bye!
     db.quit();
+    connectedClients -= 1;
   });
 });
 
+console.log('Version', VERSION);
 console.log(color('Starting chat server...', 'green'));
 http.listen(process.env.PORT || 3000);
 console.log('Listening on http://localhost:' + PORT);
 console.log('Parameters:');
 console.log('  Redis host:', REDIS_HOST);
 console.log('  Redis port:', REDIS_PORT);
+console.log('  Brand:', BRAND);
+console.log('  Base URL:', BASE_URL);
+console.log('  Favicon URL:', FAVICON_URL);
+console.log('  Channels:', CHANNELS);
+
+var gracefulExit = function () {
+  console.log('Shutting down...');
+  io.close();
+
+  setInterval(function () {
+    if (connectedClients === 0) {
+      process.exit(0);
+    }
+  }, 10);
+};
+
+process.on('SIGINT', gracefulExit).on('SIGTERM', gracefulExit);
