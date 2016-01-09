@@ -17,6 +17,7 @@ const BRAND = process.env.BRAND || 'Chat';
 const BASE_URL = process.env.BASE_URL || '';
 const CHANNELS = process.env.CHANNELS || '/main/:default;/ru/:russian';
 const VERSION = pjson.version;
+const FAVICON_URL = process.env.FAVICON_URL || '/favicon.ico';
 
 /**
  * Client-side events:
@@ -43,7 +44,7 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/../views');
 
 app.get('/', function (req, res) {
-  res.render('index', { brand: BRAND, base_url: BASE_URL, channels: CHANNELS, version: VERSION });
+  res.render('index', { brand: BRAND, base_url: BASE_URL, channels: CHANNELS, version: VERSION, favicon_url: FAVICON_URL });
 });
 
 if (process.env.NODE_ENV === 'development') {
