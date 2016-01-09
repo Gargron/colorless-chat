@@ -1,16 +1,22 @@
 let React = require('react');
+let PureRenderMixin = require('react-addons-pure-render-mixin');
 let Actions = require('../actions');
 let linkify = require('linkifyjs/string');
 
 const Message = React.createClass({
 
+  mixins: [PureRenderMixin],
+
   render () {
     let name = this.props.data.getIn(['user', 'name']);
     let gravatar = '//gravatar.com/avatar/' + this.props.data.getIn(['user', 'hash']) + '?s=64';
     let hex = '#' + this.props.data.get('hex');
+    let ownName = this.props.self.get('name');
 
     if (this.props.data.get('type') === 'message') {
       let body = linkify(this.props.data.get('text'));
+
+      body = body.replace(new RegExp('\\b(' + ownName + ')\\b', 'gi'), "<mark>$1</mark>");
 
       return (
         <div className='message message-text'>

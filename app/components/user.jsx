@@ -6,10 +6,13 @@ import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
 let React = require('react');
+let PureRenderMixin = require('react-addons-pure-render-mixin');
 let ReactDOM = require('react-dom');
 let Actions = require('../actions');
 
 const User = React.createClass({
+
+  mixins: [PureRenderMixin],
 
   handleClick () {
     Actions.mention(this.props.data.get('name'));

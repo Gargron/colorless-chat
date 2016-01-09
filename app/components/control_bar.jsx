@@ -1,10 +1,13 @@
 let React = require('react');
+let PureRenderMixin = require('react-addons-pure-render-mixin');
 let ReactDOM = require('react-dom');
 let Actions = require('../actions');
 let Dropdown = require('./dropdown');
 let usersStore = require('../stores/users');
 
 const ControlBar = React.createClass({
+
+  mixins: [PureRenderMixin],
 
   getInitialState () {
     return {
@@ -16,7 +19,7 @@ const ControlBar = React.createClass({
   componentDidMount () {
     this.unsubscribe = Actions.mention.listen(function (name) {
       this.setState({
-        text: this.state.text + '@' + name + ' ',
+        text: this.state.text + name + ' ',
       });
 
       ReactDOM.findDOMNode(this.refs.input).focus();

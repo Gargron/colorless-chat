@@ -1,6 +1,7 @@
 import List from 'material-ui/lib/lists/list';
 
 let React = require('react');
+let PureRenderMixin = require('react-addons-pure-render-mixin');
 let Reflux = require('reflux');
 let mui = require('material-ui');
 let LeftNav = mui.LeftNav;
@@ -9,7 +10,7 @@ let User = require('./user');
 
 const UsersList = React.createClass({
 
-  mixins: [Reflux.connect(usersStore, "users")],
+  mixins: [PureRenderMixin, Reflux.connect(usersStore, "users")],
 
   getInitialState () {
     return {

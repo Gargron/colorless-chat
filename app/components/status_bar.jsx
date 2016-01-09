@@ -1,4 +1,5 @@
 let React = require('react');
+let PureRenderMixin = require('react-addons-pure-render-mixin');
 let Reflux = require('reflux');
 let Actions = require('../actions');
 let UsersList = require('./users_list');
@@ -6,7 +7,7 @@ let statusesStore = require('../stores/statuses');
 
 const StatusBar = React.createClass({
 
-  mixins: [Reflux.connect(statusesStore, "statuses")],
+  mixins: [PureRenderMixin, Reflux.connect(statusesStore, "statuses")],
 
   render () {
     let last = this.state.statuses.last();

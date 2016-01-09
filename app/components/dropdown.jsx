@@ -1,10 +1,11 @@
 import ClickAwayable from 'material-ui/lib/mixins/click-awayable';
 
 let React = require('react');
+let PureRenderMixin = require('react-addons-pure-render-mixin');
 
 const Dropdown = React.createClass({
 
-  mixins: [ClickAwayable],
+  mixins: [PureRenderMixin, ClickAwayable],
 
   getInitialState () {
     return {

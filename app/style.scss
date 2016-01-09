@@ -243,6 +243,7 @@ body, #app {
         background: transparent;
         position: relative;
         overflow: hidden;
+        cursor: pointer;
 
         img {
           display: block;
@@ -300,6 +301,15 @@ body, #app {
         &:hover {
           border-bottom-color: transparent;
         }
+      }
+
+      mark {
+        display: inline-block;
+        padding: 1px 2px;
+        background: #fff;
+        color: #000;
+        text-shadow: none;
+        border-radius: 3px;
       }
     }
 
@@ -499,5 +509,53 @@ body, #app {
         display: none;
       }
     }
+  }
+}
+
+.bubble-enter {
+  .message__text {
+    transform: translate(-100%, -100%) scale(0, 0);
+  }
+
+  .message__triangle {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.bubble-enter.bubble-enter-active {
+  .message__text {
+    transform: translate(0%, 0%) scale(1, 1);
+    transition: all 100ms ease-in-out;
+  }
+
+  .message__triangle {
+    opacity: 1;
+    transform: translateX(0%);
+    transition: all 100ms ease-in-out;
+  }
+}
+
+.bubble-leave {
+  .message__text {
+    transform: translate(0%, 0%) scale(1, 1);
+  }
+
+  .message__triangle {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+}
+
+.bubble-leave.bubble-leave-active {
+  .message__text {
+    transform: translate(-100%, -100%) scale(0, 0);
+    transition: all 100ms ease-in-out;
+  }
+
+  .message__triangle {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 100ms ease-in-out;
   }
 }

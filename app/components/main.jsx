@@ -2,6 +2,7 @@ import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import DarkRawTheme from 'material-ui/lib/styles/raw-themes/dark-raw-theme';
 
 let React = require('react');
+let PureRenderMixin = require('react-addons-pure-render-mixin');
 let ControlBar = require('./control_bar');
 let MessagesList = require('./messages_list');
 let StatusBar = require('./status_bar');
@@ -10,6 +11,8 @@ let mui = require('material-ui');
 let Snackbar = mui.Snackbar;
 
 const Main = React.createClass({
+
+  mixins: [PureRenderMixin],
 
   childContextTypes : {
     muiTheme: React.PropTypes.object,
