@@ -1,5 +1,6 @@
 let React = require('react');
 let PureRenderMixin = require('react-addons-pure-render-mixin');
+let Reflux = require('reflux');
 let ReactDOM = require('react-dom');
 let Actions = require('../actions');
 let Dropdown = require('./dropdown');
@@ -7,35 +8,41 @@ let usersStore = require('../stores/users');
 
 const ControlBar = React.createClass({
 
-  mixins: [PureRenderMixin],
+  mixins: [
+    PureRenderMixin,
+    Reflux.listenTo(Actions.mention, 'onMention'),
+    Reflux.listenTo(Actions.connect, 'onConnect'),
+    Reflux.listenTo(Actions.disconnect, 'onDisconnect'),
+  ],
 
   getInitialState () {
     return {
       text: '',
       color: null,
       channel: 'default',
+      online: true,
     };
   },
 
-  componentDidMount () {
-    this.unsubscribe1 = Actions.mention.listen(function (name) {
-      this.setState({
-        text: this.state.text + name + ' ',
-      });
-
-      ReactDOM.findDOMNode(this.refs.input).focus();
-    }.bind(this));
-
-    this.unsubscribe2 = Actions.connect.listen(function () {
-      this.setState({
-        channel: 'default',
-      });
-    }.bind(this));
+  onConnect () {
+    this.setState({
+      channel: 'default',
+      online: true,
+    });
   },
 
-  componentWillUnmount () {
-    this.unsubscribe1();
-    this.unsubscribe2();
+  onDisconnect () {
+    this.setState({
+      online: false,
+    });
+  },
+
+  onMention (name) {
+    this.setState({
+      text: this.state.text + name + ' ',
+    });
+
+    ReactDOM.findDOMNode(this.refs.input).focus();
   },
 
   handleTextChange (e) {
@@ -79,6 +86,10 @@ const ControlBar = React.createClass({
   },
 
   handleSubmit (e) {
+    if (!this.state.online) {
+      return;
+    }
+
     Actions.sendMessage(this.state.text, this.state.color);
 
     this.setState({
@@ -140,7 +151,7 @@ const ControlBar = React.createClass({
 
           <div className='control-bar__form'>
             <input ref='input' className='input-control' type='text' autoFocus autoComplete='off' value={this.state.text} onChange={this.handleTextChange} onKeyUp={this.handleInputHelp} onKeyDown={this.handleCompletions} />
-            <button className='btn' onClick={this.handleSubmit}>Post!</button>
+            <button className='btn' onClick={this.handleSubmit} disabled={!this.state.online}>Post!</button>
           </div>
         </div>
       </div>

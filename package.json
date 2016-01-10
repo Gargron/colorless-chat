@@ -1,6 +1,6 @@
 {
   "name": "colorless-chat",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A web chat",
   "main": "server/index.js",
   "scripts": {

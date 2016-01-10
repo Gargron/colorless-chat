@@ -213,6 +213,7 @@ body, #app {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  cursor: pointer;
 
   &:hover {
     background-color: #fff;
@@ -222,6 +223,21 @@ body, #app {
     position: relative;
     bottom: -1px;
     background-color: #ddd;
+  }
+
+  &[disabled] {
+    color: #999;
+    border-color: #999;
+    background-image: none;
+
+    &:hover {
+      background-color: #eee;
+    }
+
+    &:active {
+      bottom: 0px;
+      background-color: #eee;
+    }
   }
 }
 

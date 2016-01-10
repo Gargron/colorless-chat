@@ -10,7 +10,11 @@ let Immutable = require('immutable');
 
 const MessagesList = React.createClass({
 
-  mixins: [PureRenderMixin, Reflux.connect(messagesStore, "messages")],
+  mixins: [
+    PureRenderMixin,
+    Reflux.connect(messagesStore, 'messages'),
+    Reflux.listenTo(Actions.authenticated, 'onAuthenticated'),
+  ],
 
   getInitialState () {
     return {
@@ -18,16 +22,10 @@ const MessagesList = React.createClass({
     };
   },
 
-  componentDidMount () {
-    this.unsubscribe = Actions.authenticated.listen(function (d) {
-      this.setState({
-        self: Immutable.fromJS(d.user),
-      });
-    }.bind(this));
-  },
-
-  componentWillUnmount () {
-    this.unsubscribe();
+  onAuthenticated (d) {
+    this.setState({
+      self: Immutable.fromJS(d.user),
+    });
   },
 
   render () {
