@@ -88,6 +88,12 @@ window.addEventListener('offline', function () {
   }
 });
 
+window.addEventListener('beforeunload', function (e) {
+  let msg = 'Are you sure you want to quit the chat?';
+  e.returnValue = msg;
+  return msg;
+});
+
 Actions.sendMessage.listen(function (t, hex) {
   socket.emit('message', { text: t, hex: hex });
 });
