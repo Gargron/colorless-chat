@@ -28,3 +28,5 @@ Options:
 * REDIS_PORT: Which Redis port to use
 * REDIS_HOST: Which Redis host to use
 * CLEAN_SLATE: Clean up all chat-related keys from Redis before starting
+* CSS_URL: If set, this stylesheet will be embedded after the default one
+* JS_URL: If set, this JS will be loaded after the default ones

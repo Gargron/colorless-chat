@@ -10,15 +10,17 @@ var httpProxy   = require('http-proxy');
 var RateLimiter = require("rolling-rate-limiter");
 var pjson   = require('../package.json');
 
-const REDIS_HOST = process.env.REDIS_HOST || '127.0.0.1';
-const REDIS_PORT = process.env.REDIS_PORT || 6379;
-const PORT = process.env.PORT || 3000;
-const BRAND = process.env.BRAND || 'Chat';
-const BASE_URL = process.env.BASE_URL || '';
-const CHANNELS = process.env.CHANNELS || '/main/:default;/ru/:russian';
-const VERSION = pjson.version;
+const REDIS_HOST  = process.env.REDIS_HOST || '127.0.0.1';
+const REDIS_PORT  = process.env.REDIS_PORT || 6379;
+const PORT        = process.env.PORT || 3000;
+const BRAND       = process.env.BRAND || 'Chat';
+const BASE_URL    = process.env.BASE_URL || '';
+const CHANNELS    = process.env.CHANNELS || '/main/:default;/ru/:russian';
+const VERSION     = pjson.version;
 const FAVICON_URL = process.env.FAVICON_URL || '/favicon.ico';
 const CLEAN_SLATE = (process.env.CLEAN_SLATE || false) === 'true';
+const CSS_URL     = process.env.CSS_URL || false;
+const JS_URL      = process.env.JS_URL || false;
 
 /**
  * Client-side events:
@@ -45,7 +47,15 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/../views');
 
 app.get('/', function (req, res) {
-  res.render('index', { brand: BRAND, base_url: BASE_URL, channels: CHANNELS, version: VERSION, favicon_url: FAVICON_URL });
+  res.render('index', {
+    brand: BRAND,
+    base_url: BASE_URL,
+    channels: CHANNELS,
+    version: VERSION,
+    favicon_url: FAVICON_URL,
+    css_url: CSS_URL,
+    js_url: JS_URL
+  });
 });
 
 if (process.env.NODE_ENV === 'development') {
@@ -63,9 +73,9 @@ if (process.env.NODE_ENV === 'development') {
 
 if (CLEAN_SLATE) {
   console.log(color('Cleaning up Redis for a fresh start', 'green'));
-  
+
   var db = redis.createClient({ host: REDIS_HOST, port: REDIS_PORT });
-  
+
   db.keys('chat:list:*', function (_, lists) {
     db.keys('chat:sessions:*', function (_, sessions) {
       db.del(['chat:online'].concat(lists, sessions), function (err) {
